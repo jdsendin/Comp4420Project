@@ -1,4 +1,9 @@
 import java.util.HashMap;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 /*
  * Comp4420 Winter 2015 Project: Implementing QuickSearch and other variants. Then, comparing and contrasting them.
@@ -9,14 +14,51 @@ import java.util.HashMap;
 public class C4420Proj {
 	public static void main(String[] args)
 	{
-			//testingQuickSearch();
-			testingFastQuickSearch();
+		/*
+		 * NOTE: not sure how you want to run this. i.e. if you want to pass in the file to read as args or just hard code it. 
+		 * so just make the appropriate change
+		 */
+		//File inputFile = null;
+		
+		String file = "Welcome to the Department of Computer Science course web server."; //readFile(inputFile);
+		testingQuickSearch("e", file);
+		testingFastQuickSearch("e", file);
 	}
 	
-	private static void testingQuickSearch()
+	// Reads the file for its contents and returns a the contents as a single string.
+	private static String readFile(File inputFile) {
+		String text = "";
+		
+		BufferedReader br ;
+		
+		try {
+			br = new BufferedReader(new FileReader(inputFile));
+	        StringBuilder sb = new StringBuilder();
+	        String line = br.readLine();
+	
+	        while (line != null) 
+	        {
+	            sb.append(line);
+	            line = br.readLine();
+	        }
+	        text = sb.toString();
+	        br.close();
+		} 
+		catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return text;
+	}
+	
+	private static void testingQuickSearch(String P, String T)
 	{
-		String P = "server";
-		String T = "Welcome to the Department of Computer Science course web server.";
+		//String P = "server";
+		//String T = "Welcome to the Department of Computer Science course web server.";
 		
 		int lenT = T.length();
 		int lenP = P.length();
@@ -31,10 +73,10 @@ public class C4420Proj {
 		QuickSearch(P, lenP, T, lenT, qsbc);
 	}
 	
-	private static String testingFastQuickSearch()
+	private static String testingFastQuickSearch(String P, String T)
 	{
-		String P = "GCAGTCAG";
-		String T = "GCATCGCAGTCAGTATACAGTAC";
+		//String P = "GCAGTCAG";
+		//String T = "GCATCGCAGTCAGTATACAGTAC";
 		int pos = getPos(P, P.length(), T);
 		HashMap next = new HashMap();
 		HashMap shift = new HashMap();
