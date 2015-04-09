@@ -25,6 +25,56 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+
+//Read the file contents
+char* readFileContents(char *filename, int fileSize)
+{
+	char *buffer;
+	FILE *fr; /*declare the file pointer*/
+	
+	//Read the bytes out of the file
+	if(filename == NULL || fileSize <= 0)
+	{
+		perror("invalid file OR filesize passed");
+		return NULL;
+	}
+	else
+	{				
+		printf("Filename is: %s\n", filename);
+		
+		//Load the file
+		fr = fopen(filename, "rb"); /*open the file to read its bytes*/
+		
+		if(fr)
+		{
+			int sizeOfFile = fileSize + 1;// * sizeof(char);
+			//sizeOfFile++;
+			buffer = (char*) calloc(sizeOfFile, sizeof(char));
+			
+			if(buffer)
+			{
+				fread(buffer, 1,fileSize, fr);
+				//printf("File contents is: %s\n", buffer);
+			}
+			else
+			{
+				printf("Buffer not defined\n");
+				return NULL;
+			}
+		}
+		else
+		{
+			printf("File not open\n");
+			return NULL;
+		}
+		
+		//printf("The file contains \n%s\n", buffer);
+		fclose(fr); /*Close the file prior to exiting the routine*/
+	}
+	
+	return buffer;
+}
 
 int *preKmp(char *pattern, int psize) {
 	int i, k;
@@ -104,31 +154,79 @@ int KMP(char *target, int tsize, char *pattern, int psize)
 	return -1;
 }
 
-int main(int argc, char **argv)
+void handleKmpSearch()
 {
-	char *target = "Welcome to the Department of Computer Science course web server.";
-	//char target[] = "ABC ABCDAB ABCDABCDABDE";
-	//char target[] = "GCATCGCAGAGAGTATACAGTACG";
-	char *temp = target;
-	int tsize = strlen(target);
-	char *pattern = "Department";
-	//char pattern[] = "ABCDABD";
-	//char pattern[] = "GCAGAGAG";
-	int psize = strlen(pattern);
+	//char *PatternString = "In";//pattern to find
+	char *PatternString;// = "GCAGAGAG";//pattern to find
 	
-	printf("Target: %s\n Pattern: %s\n", target, pattern);
+	struct stat sb; //Used to get all stats on the file
+	int fileSize; //used to store the file's size
+	int lenTS, lenPS; //Len of the Target and Pattern string respectively
 	
-	int found = KMP(target, tsize, pattern, psize);
+	char *TargetText; //Used as the target string
+	//char *temp;
+	char *bibleFile = "textFiles/kjvdat.txt";
+	//char *bibleFile = "textFiles/testBible.txt";
+	
+	//Testing searching for a Pattern string
+	//using the bible as the Target string
+	
+	//Check if we could get stats for the file
+	if(stat(bibleFile, &sb) == -1)
+	{
+		perror("stat");
+		exit(EXIT_FAILURE);
+	}
+	
+	fileSize = sb.st_size;
+	
+	//Read in the bible into a buffer
+	TargetText = readFileContents(bibleFile, fileSize);
+	
+	if(!TargetText)
+	{
+		perror("Could not read file");
+		return;
+	}	
+	
+	//temp = TargetText;
+	
+	PatternString = TargetText;
+	lenTS = fileSize;
+	lenPS = lenTS;
+	//lenPS = strlen(PatternString);
+	
+	printf("lenTS is %d, lenPS is %d\n", lenTS, lenPS);
+
+	//QS(TargetText, lenTS, PatternString, lenPS);
+	int found = KMP(TargetText, lenTS, PatternString, lenPS);
 	
 	if(found >= 0)
 	{
 		printf("Match found at position: %d\n", found);
-		printf("Matched @: %s\n", temp + found);
+		//printf("Matched @: %s\n", temp + found);
 	}
 	else
 	{
 		printf("Pattern not found in the Target string\n");
 	}
+}
+
+int main(int argc, char **argv)
+{
+	//char *target = "Welcome to the Department of Computer Science course web server.";
+	////char target[] = "ABC ABCDAB ABCDABCDABDE";
+	////char target[] = "GCATCGCAGAGAGTATACAGTACG";
+	//char *temp = target;
+	//int tsize = strlen(target);
+	//char *pattern = "Department";
+	////char pattern[] = "ABCDABD";
+	////char pattern[] = "GCAGAGAG";
+	//int psize = strlen(pattern);
+	
+	//printf("Target: %s\n Pattern: %s\n", target, pattern);
+	
+	handleKmpSearch();
 	
 	return 0;
 }
