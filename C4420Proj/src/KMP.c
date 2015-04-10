@@ -157,21 +157,66 @@ int KMP(char *target, int tsize, char *pattern, int psize)
 	}
 	
 	free(kmpNext);	
-	return -1;
+	return 1;
+}
+
+char *getSubstring(char *source, int start, int end)
+{
+	char *result;
+	int diff, sourceLen;
+	
+	if(!source || end <= start)
+	{
+		return NULL;
+	}
+	
+	diff = end - start;
+	sourceLen = strlen(source);
+	if(sourceLen < diff || start >= sourceLen)
+	{
+		return NULL;
+	}
+	
+	result = calloc(diff, sizeof(char) + 1);
+	
+	strncpy(result, source+start, diff);
+	
+	return result;
+}
+
+void runKmpOnTargetSubstring(char *TargetText, int lenTS, int subStart, int subEnd)
+{
+	printf("\n\nRunning KMP on substring Start: %d - End: %d\n", subStart, subEnd);
+	
+	char *PatternString;//pattern to find
+	clock_t start, end;
+	float seconds;
+	
+	//Test new pattern string
+	int lenPS = subEnd - subStart;
+	
+	PatternString = getSubstring(TargetText, subStart, subEnd);	
+	start = clock();
+	KMP(TargetText, lenTS, PatternString, lenPS);
+	end = clock();
+	seconds = (float)(end - start) / CLOCKS_PER_SEC;	
+	printf("Time taken to run Pattern string = %f seconds\n",
+			seconds);
+	//End Test new pattern string
+	
+	free(PatternString);
+	//free(start);
+	//free(end);
 }
 
 void handleKmpSearch()
-{
-	//char *PatternString = "GCAGAGAG";//"In";//pattern to find
-	//char *PatternString = "O Lord";
-	char *PatternString;// = "GCAGAGAG";//pattern to find
-	
+{	
 	struct stat sb; //Used to get all stats on the file
 	int fileSize; //used to store the file's size
-	int lenTS, lenPS; //Len of the Target and Pattern string respectively
+	int lenTS;//Len of the Target string
+	int start, end;
 	
 	char *TargetText; //Used as the target string
-	//char *temp;
 	char *bibleFile = "textFiles/kjvdat.txt";
 	//char *bibleFile = "textFiles/testBible.txt";
 	
@@ -186,64 +231,87 @@ void handleKmpSearch()
 	}
 	
 	fileSize = sb.st_size;
+	lenTS = fileSize;
 	
 	//Read in the bible into a buffer
 	TargetText = readFileContents(bibleFile, fileSize);
 	
-	if(!TargetText)
+	if(TargetText == NULL)
 	{
 		perror("Could not read file");
 		return;
 	}	
 	
-	//temp = TargetText;
+	//Test new pattern string
+	start = 0;
+	end = 1;
+	runKmpOnTargetSubstring(TargetText, lenTS, start, end);
+	//End Test new pattern stringda
 	
-	PatternString = TargetText;
-	lenTS = fileSize;
-	lenPS = lenTS;
-	//lenPS = strlen(PatternString);
+	//Test new pattern string
+	start = 30000;
+	end = 30010;
+	runKmpOnTargetSubstring(TargetText, lenTS, start, end);
+	//End Test new pattern string
 	
-	printf("lenTS is %d, lenPS is %d\n", lenTS, lenPS);
-
-	//QS(TargetText, lenTS, PatternString, lenPS);
-	int found = KMP(TargetText, lenTS, PatternString, lenPS);
+	//Test new pattern string
+	start = 20050;
+	end = 20100;
+	runKmpOnTargetSubstring(TargetText, lenTS, start, end);
+	//End Test new pattern string
 	
-	if(found >= 0)
-	{
-		//printf("Match found at position: %d\n", found);
-		//printf("Matched @: %s\n", temp + found);
-	}
-	else
-	{
-		//printf("Pattern not found in the Target string\n");
-	}
+	//Test new pattern string
+	start = 10000;
+	end = 10100;
+	runKmpOnTargetSubstring(TargetText, lenTS, start, end);
+	//End Test new pattern string
+	
+	//Test new pattern string
+	start = 30100;
+	end = 30300;
+	runKmpOnTargetSubstring(TargetText, lenTS, start, end);
+	//End Test new pattern string
+	
+	//Test new pattern string
+	start = 20900;
+	end = 30200;
+	runKmpOnTargetSubstring(TargetText, lenTS, start, end);
+	//End Test new pattern string
+	
+	//Test new pattern string
+	start = 0;
+	end = 400;
+	runKmpOnTargetSubstring(TargetText, lenTS, start, end);
+	//End Test new pattern string
+	
+	//Test new pattern string
+	start = 200;
+	end = 700;
+	runKmpOnTargetSubstring(TargetText, lenTS, start, end);
+	//End Test new pattern string
+	
+	//Test new pattern string
+	start = 2500;
+	end = 3100;
+	runKmpOnTargetSubstring(TargetText, lenTS, start, end);
+	//End Test new pattern string
+	
+	//Test new pattern string
+	start = 0;
+	end = lenTS;
+	runKmpOnTargetSubstring(TargetText, lenTS, start, end);
+	//End Test new pattern string
 	
 	//ADDITION: all the positions the pattern string gets 
 	//matched at will be printed so no need to check for the
 	//return value
+	
+	free(TargetText);
 }
 
 int main(int argc, char **argv)
-{
-	//char *target = "Welcome to the Department of Computer Science course web server.";
-	////char target[] = "ABC ABCDAB ABCDABCDABDE";
-	////char target[] = "GCATCGCAGAGAGTATACAGTACG";
-	//char *temp = target;
-	//int tsize = strlen(target);
-	//char *pattern = "Department";
-	////char pattern[] = "ABCDABD";
-	////char pattern[] = "GCAGAGAG";
-	//int psize = strlen(pattern);
-	
-	//printf("Target: %s\n Pattern: %s\n", target, pattern);
-	
-	clock_t start = clock();
-	/*Do something*/
+{	
 	handleKmpSearch();
-	clock_t end = clock();
-	float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-	
-	printf("Time taken to run handleKmpSearch = %f seconds\n", seconds);
 	
 	return 0;
 }
