@@ -36,7 +36,7 @@ public class C4420Proj {
 			for(int j = 0; j < lenP && P.charAt(j) == T.charAt(j+i); j++)
 				if(i >= lenP)
 				{
-					System.out.format("Match Found At: index %d%n", i);
+					System.out.format("Match starting at index: %d%n", i);
 				}
 		}
 	}
