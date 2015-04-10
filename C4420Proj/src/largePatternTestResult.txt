@@ -1,0 +1,12 @@
+
+Starting QuickSearch
+Match starting at index: 0
+Time taken in seconds = 0.416099014
+
+Starting FastQuickSearch
+Match starting at index: 0
+Time taken in seconds = 1.217556274
+
+Starting BruteForceSearch
+Time taken in seconds = 4.2455E-5
+Smallest time taken in seconds= 4.2455E-5
