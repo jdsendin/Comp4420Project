@@ -21,8 +21,24 @@ public class C4420Proj {
 		//File inputFile = null;
 		
 		String file = "Welcome to the Department of Computer Science course web server."; //readFile(inputFile);
-		testingQuickSearch("e", file);
-		testingFastQuickSearch("e", file);
+		//testingQuickSearch("e", file);
+		//testingFastQuickSearch("e", file);
+		testingBruteForceSearch("e", file);
+	}
+	
+	private static void testingBruteForceSearch(String P, String T)
+	{
+		int lenP = P.length();
+		int lenT = T.length();
+		
+		for(int i = 0; i < lenT-lenP; i++)
+		{
+			for(int j = 0; j < lenP && P.charAt(j) == T.charAt(j+i); j++)
+				if(i >= lenP)
+				{
+					System.out.format("Match Found At: index %d%n", i);
+				}
+		}
 	}
 	
 	// Reads the file for its contents and returns a the contents as a single string.
