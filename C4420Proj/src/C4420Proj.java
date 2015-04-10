@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /*
- * Comp4420 Winter 2015 Project: Implementing QuickSearch and other variants. Then, comparing and contrasting them.
+ * Comp4420 Winter 2015 Project: Implementing QuickSearch and other variants. 
+ * Then, comparing and contrasting them.
  * Chibuzor Alumba
  * Jaydee Sendin
  */
@@ -15,34 +17,96 @@ public class C4420Proj {
 	public static void main(String[] args)
 	{
 		/*
-		 * NOTE: not sure how you want to run this. i.e. if you want to pass in the file to read as args or just hard code it. 
+		 * NOTE: not sure how you want to run this. i.e. if you want 
+		 * to pass in the file to read as args or just hard code it. 
 		 * so just make the appropriate change
 		 */
-		//File inputFile = null;
+		long startTime, endTime, elapsedTime;
+		double smallestTime, seconds;
+		String inputFile = "textFiles/kjvdat.txt";
+		String patternString = "";
 		
-		String file = "Welcome to the Department of Computer Science course web server."; //readFile(inputFile);
-		//testingQuickSearch("e", file);
-		//testingFastQuickSearch("e", file);
-		testingBruteForceSearch("e", file);
+		String file = readFile(inputFile);
+		
+		patternString = file.substring(30000, 40000);
+		
+		//START time recorder
+		startTime = System.nanoTime();
+		testingQuickSearch(patternString, file);
+		endTime = System.nanoTime();				
+		//END time recorder
+		
+		//Print time taken in seconds
+		elapsedTime = endTime - startTime;
+		seconds = ((double)elapsedTime / 1000000000.0);
+		System.out.println("Time taken in seconds = " +
+			seconds);
+			//TimeUnit.SECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS));
+		
+		//Record the smallest time
+		smallestTime = seconds;
+		
+		//START time recorder
+		startTime = System.nanoTime();
+		testingFastQuickSearch(patternString, file);
+		endTime = System.nanoTime();
+		//END time recorder
+		
+		//Print time taken in seconds
+		elapsedTime = endTime - startTime;
+		seconds = ((double)elapsedTime / 1000000000.0);
+		System.out.println("Time taken in seconds = " +
+			seconds);
+			
+		//Record the smallest time
+		smallestTime = Math.min(smallestTime, seconds);
+		
+		//START time recorder
+		startTime = System.nanoTime();
+		testingBruteForceSearch(patternString, file);
+		endTime = System.nanoTime();
+		//END time recorder
+		
+		//Print time taken in seconds
+		elapsedTime = endTime - startTime;
+		seconds = ((double)elapsedTime / 1000000000.0);
+		System.out.println("Time taken in seconds = " +
+			seconds);
+			
+		//Record the smallest time
+		smallestTime = Math.min(smallestTime, seconds);
+		
+		System.out.println("Smallest time taken in seconds= " +
+			smallestTime);
 	}
 	
 	private static void testingBruteForceSearch(String P, String T)
 	{
+		System.out.println("\nStarting BruteForceSearch");
 		int lenP = P.length();
 		int lenT = T.length();
 		
 		for(int i = 0; i < lenT-lenP; i++)
 		{
-			for(int j = 0; j < lenP && P.charAt(j) == T.charAt(j+i); j++)
-				if(i >= lenP)
+			boolean found = true;
+			
+			for(int j = 0; j < lenP; j++)
+			{
+				if(P.charAt(j) != T.charAt(i+j))
 				{
-					System.out.format("Match starting at index: %d%n", i);
+					found = false;
 				}
+			}
+			
+			if(found)
+			{
+				System.out.format("Match starting at index: %d%n", i);
+			}
 		}
 	}
 	
 	// Reads the file for its contents and returns a the contents as a single string.
-	private static String readFile(File inputFile) {
+	private static String readFile(String inputFile) {
 		String text = "";
 		
 		BufferedReader br ;
@@ -73,6 +137,7 @@ public class C4420Proj {
 	
 	private static void testingQuickSearch(String P, String T)
 	{
+		System.out.println("\nStarting QuickSearch");
 		//String P = "server";
 		//String T = "Welcome to the Department of Computer Science course web server.";
 		
@@ -84,13 +149,14 @@ public class C4420Proj {
 		
 		qsbc = preQuickSearch(T, P, lenP);
 		
-		System.out.println(qsbc.toString());
+		//System.out.println(qsbc.toString());
 		// --> QuickSearch is O(lenP*lenT)	
 		QuickSearch(P, lenP, T, lenT, qsbc);
 	}
 	
 	private static String testingFastQuickSearch(String P, String T)
 	{
+		System.out.println("\nStarting FastQuickSearch");
 		//String P = "GCAGTCAG";
 		//String T = "GCATCGCAGTCAGTATACAGTAC";
 		int pos = getPos(P, P.length(), T);
@@ -125,7 +191,15 @@ public class C4420Proj {
 			{
 				System.out.println("Match starting at index: " + j);
 			}
-			j = j + ((Integer)shift.get(""+T.charAt(j+P.length()))).intValue();
+			
+			if(T.length() > j+P.length())
+			{
+				j = j + ((Integer)shift.get(""+T.charAt(j+P.length()))).intValue();
+			}
+			else
+			{
+				j = T.length();
+			}
 		}
 		return "";
 	}

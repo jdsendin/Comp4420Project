@@ -26,6 +26,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <time.h>
 
 //Read the file contents
 char* readFileContents(char *filename, int fileSize)
@@ -49,7 +50,7 @@ char* readFileContents(char *filename, int fileSize)
 		if(fr)
 		{
 			int sizeOfFile = fileSize + 1;// * sizeof(char);
-			//sizeOfFile++;
+			
 			buffer = (char*) calloc(sizeOfFile, sizeof(char));
 			
 			if(buffer)
@@ -145,8 +146,13 @@ int KMP(char *target, int tsize, char *pattern, int psize)
 		//array, then we found the pattern
 		if(pos == psize - 1)
 		{
-			free(kmpNext);
-			return i-pos;
+			//free(kmpNext);
+			//return i-pos;
+			
+			//ADDITION: to help find ALL the matching strings
+			//not just the first matching string			
+			printf("Pattern Matched @: %d\n", (i-pos));
+			pos = -1;
 		}
 	}
 	
@@ -156,7 +162,8 @@ int KMP(char *target, int tsize, char *pattern, int psize)
 
 void handleKmpSearch()
 {
-	//char *PatternString = "In";//pattern to find
+	//char *PatternString = "GCAGAGAG";//"In";//pattern to find
+	//char *PatternString = "O Lord";
 	char *PatternString;// = "GCAGAGAG";//pattern to find
 	
 	struct stat sb; //Used to get all stats on the file
@@ -203,13 +210,17 @@ void handleKmpSearch()
 	
 	if(found >= 0)
 	{
-		printf("Match found at position: %d\n", found);
+		//printf("Match found at position: %d\n", found);
 		//printf("Matched @: %s\n", temp + found);
 	}
 	else
 	{
-		printf("Pattern not found in the Target string\n");
+		//printf("Pattern not found in the Target string\n");
 	}
+	
+	//ADDITION: all the positions the pattern string gets 
+	//matched at will be printed so no need to check for the
+	//return value
 }
 
 int main(int argc, char **argv)
@@ -226,7 +237,13 @@ int main(int argc, char **argv)
 	
 	//printf("Target: %s\n Pattern: %s\n", target, pattern);
 	
+	clock_t start = clock();
+	/*Do something*/
 	handleKmpSearch();
+	clock_t end = clock();
+	float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+	
+	printf("Time taken to run handleKmpSearch = %f seconds\n", seconds);
 	
 	return 0;
 }
