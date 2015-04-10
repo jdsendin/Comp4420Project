@@ -21,88 +21,67 @@ public class C4420Proj {
 		 * to pass in the file to read as args or just hard code it. 
 		 * so just make the appropriate change
 		 */
-		long startTime, endTime, elapsedTime;
-		double smallestTime, seconds;
+
+
 		String inputFile = "textFiles/kjvdat.txt";
 		String patternString = "";
 		
-		String file = readFile(inputFile);
-		
+		String file = readFile(inputFile);		
 		patternString = file.substring(30000, 40000);
 		
-		//START time recorder
+		file = "ABCDEFGHIJKLMNOPABCDEFGHIJKLMNOP";
+		patternString = "MN";
+		
+		timeIt(file, patternString);
+		
+	}
+	
+	private static void timeIt(String file, String patternString)
+	{
+		long startTime, endTime, elapsedTime;
+		double smallestTime, seconds;
+		
+		Search search = new Search(file);
+		
+		//START time recorder for QS
 		startTime = System.nanoTime();
-		testingQuickSearch(patternString, file);
+		search.testingQuickSearch(patternString);
 		endTime = System.nanoTime();				
 		//END time recorder
 		
 		//Print time taken in seconds
 		elapsedTime = endTime - startTime;
 		seconds = ((double)elapsedTime / 1000000000.0);
-		System.out.println("Time taken in seconds = " +
-			seconds);
-			//TimeUnit.SECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS));
+		System.out.println("Time taken in seconds = " + seconds);
+		//TimeUnit.SECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS));
+		// End QS
 		
-		//Record the smallest time
-		smallestTime = seconds;
-		
-		//START time recorder
+		//START time recorder for FQS
 		startTime = System.nanoTime();
-		testingFastQuickSearch(patternString, file);
-		endTime = System.nanoTime();
+		search.testingFastQuickSearch(patternString);
+		endTime = System.nanoTime();				
 		//END time recorder
 		
 		//Print time taken in seconds
 		elapsedTime = endTime - startTime;
 		seconds = ((double)elapsedTime / 1000000000.0);
-		System.out.println("Time taken in seconds = " +
-			seconds);
+		System.out.println("Time taken in seconds = " + seconds);
+		//TimeUnit.SECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS));
+		// End FQS
 			
-		//Record the smallest time
-		smallestTime = Math.min(smallestTime, seconds);
-		
 		//START time recorder
 		startTime = System.nanoTime();
-		testingBruteForceSearch(patternString, file);
-		endTime = System.nanoTime();
+		search.testingBruteForceSearch(patternString);
+		endTime = System.nanoTime();				
 		//END time recorder
 		
 		//Print time taken in seconds
 		elapsedTime = endTime - startTime;
 		seconds = ((double)elapsedTime / 1000000000.0);
-		System.out.println("Time taken in seconds = " +
-			seconds);
-			
-		//Record the smallest time
-		smallestTime = Math.min(smallestTime, seconds);
-		
-		System.out.println("Smallest time taken in seconds= " +
-			smallestTime);
-	}
-	
-	private static void testingBruteForceSearch(String P, String T)
-	{
-		System.out.println("\nStarting BruteForceSearch");
-		int lenP = P.length();
-		int lenT = T.length();
-		
-		for(int i = 0; i < lenT-lenP; i++)
-		{
-			boolean found = true;
-			
-			for(int j = 0; j < lenP; j++)
-			{
-				if(P.charAt(j) != T.charAt(i+j))
-				{
-					found = false;
-				}
-			}
-			
-			if(found)
-			{
-				System.out.format("Match starting at index: %d%n", i);
-			}
-		}
+		System.out.println("Time taken in seconds = " + seconds);
+		//TimeUnit.SECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS));	
+		// END BruteForce
+
 	}
 	
 	// Reads the file for its contents and returns a the contents as a single string.
@@ -134,32 +113,63 @@ public class C4420Proj {
 		
 		return text;
 	}
+}
+
+class Search
+{
+	private String T;
+	private int lenT;
 	
-	private static void testingQuickSearch(String P, String T)
+	public Search(String file)
+	{
+		T = file;
+		lenT = file.length();
+	}
+	
+	public void testingQuickSearch(String P)
 	{
 		System.out.println("\nStarting QuickSearch");
-		//String P = "server";
-		//String T = "Welcome to the Department of Computer Science course web server.";
 		
-		int lenT = T.length();
 		int lenP = P.length();
 		int init = lenP + 1;
 		
 		HashMap qsbc = new HashMap();
 		
-		qsbc = preQuickSearch(T, P, lenP);
+		qsbc = preQuickSearch(P, lenP);
 		
 		//System.out.println(qsbc.toString());
 		// --> QuickSearch is O(lenP*lenT)	
-		QuickSearch(P, lenP, T, lenT, qsbc);
+		QuickSearch(P, lenP, qsbc);
 	}
 	
-	private static String testingFastQuickSearch(String P, String T)
+	public void testingBruteForceSearch(String P)
+	{
+		System.out.println("\nStarting BruteForceSearch");
+		int lenP = P.length();
+		
+		for(int i = 0; i < lenT-lenP; i++)
+		{
+			boolean found = true;
+			
+			for(int j = 0; j < lenP; j++)
+			{
+				if(P.charAt(j) != T.charAt(i+j))
+				{
+					found = false;
+				}
+			}
+			
+			if(found)
+			{
+				System.out.format("Match starting at index: %d%n", i);
+			}
+		}
+	}
+	
+	public String testingFastQuickSearch(String P)
 	{
 		System.out.println("\nStarting FastQuickSearch");
-		//String P = "GCAGTCAG";
-		//String T = "GCATCGCAGTCAGTATACAGTAC";
-		int pos = getPos(P, P.length(), T);
+		int pos = getPos(P, P.length());
 		HashMap next = new HashMap();
 		HashMap shift = new HashMap();
 		int j = 0;
@@ -171,11 +181,11 @@ public class C4420Proj {
 		// which finds the index of the right most occurance of a character in pattern string.
 		// NOTE: counting starts from 1 and is from right to left.
 		String patternPrefix = P.substring(0, pos);
-		next = preQuickSearch(T, patternPrefix, patternPrefix.length());
+		next = preQuickSearch(patternPrefix, patternPrefix.length());
 		
 		// calculates the shift table for P
 		// again uses the same preprocessing as old quick search.
-		shift = preQuickSearch(T, P, P.length());
+		shift = preQuickSearch(P, P.length());
 		
 		while(j <= T.length() - P.length())
 		{
@@ -205,7 +215,7 @@ public class C4420Proj {
 	}
 	
 	// gets the position of a character in P that produces the greatest expected shift value
-	private static int getPos(String P, int lenP, String T)
+	private int getPos(String P, int lenP)
 	{
 		HashMap prePos = new HashMap();
 		int maxES = 0;
@@ -240,7 +250,7 @@ public class C4420Proj {
 	}
 		
 	//O(lenP*lenT)
-	private static void QuickSearch(String p, int lenP, String t, int lenT, HashMap qsbc) 
+	private void QuickSearch(String p, int lenP, HashMap qsbc) 
 	{
 		int j = 0;
 		int charPos;
@@ -249,14 +259,14 @@ public class C4420Proj {
 		{
 			charPos = j + lenP;
 			//charPos just tells us where the end of the matching ends.
-			if(p.equals(t.substring(j, charPos)))
+			if(p.equals(T.substring(j, charPos)))
 			{
 				System.out.println("Match starting at index: " + j);
 			}
 			
 			if(charPos < lenT)
 			{
-				j += ((Integer) qsbc.get(""+t.charAt(charPos))).intValue();
+				j += ((Integer) qsbc.get(""+T.charAt(charPos))).intValue();
 				// j is the bad shift = what index to start the searching/matching
 				// j = j + qsbc[last char in the substring]
 				// which makes sure that we are still possibly including chars
@@ -275,7 +285,7 @@ public class C4420Proj {
 	 * Counting starts from right to left of the pattern string.
 	 * This is O(lenP+lenT)
 	 */
-	private static HashMap preQuickSearch(String T, String P, int lenP)
+	private HashMap preQuickSearch(String P, int lenP)
 	{
 		HashMap qsbc = new HashMap();
 		int init = lenP + 1;
