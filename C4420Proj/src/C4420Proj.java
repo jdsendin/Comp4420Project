@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.io.PrintWriter;
 
 /*
  * Comp4420 Winter 2015 Project: Implementing QuickSearch and other variants. 
@@ -24,39 +25,156 @@ public class C4420Proj {
 
 
 		String inputFile = "textFiles/kjvdat.txt";
-		String patternString = "";
+		PrintWriter writer = null; 
 		
-		String file = readFile(inputFile);		
-		patternString = file.substring(30000, 40000);
+		try {
+			writer = new PrintWriter("textFiles/output.txt");
+		} 
+		catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+		}
 		
-		file = "ABCDEFGHIJKLMNOPABCDEFGHIJKLMNOP";
-		patternString = "MN";
+		String file = readFile(inputFile);
+		Search search = new Search(file, writer);
 		
-		timeIt(file, patternString);
-		
+		//testQS(file, search, writer);
+		testFQS(file, search, writer);
+		//testBrute(file, search, writer);
+		writer.close();		
 	}
 	
-	private static void timeIt(String file, String patternString)
+	private static void testQS(String file, Search search, PrintWriter writer)
+	{
+		String patternString = "";
+		
+		writer.write(String.format("Testing Can't Find String%n"));
+		patternString = "YouCantFindThis";
+		timeQuickSearch(search, patternString, writer);
+		
+		writer.write(String.format("%nTesting Can Find String%n"));		
+		patternString = file.substring(0, 1);
+		timeQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(30000, 30010);
+		timeQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(20050, 20100);
+		timeQuickSearch(search, patternString, writer);		
+
+		patternString = file.substring(10000, 10100);
+		timeQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(30100, 30300);
+		timeQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(20900, 21200);
+		timeQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(0, 400);
+		timeQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(200, 700);
+		timeQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(2500, 3100);
+		timeQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(0, file.length());
+		timeQuickSearch(search, patternString, writer);
+
+	}
+	
+	private static void testFQS(String file, Search search, PrintWriter writer)
+	{
+		String patternString = "";
+		
+		writer.write(String.format("Testing Can't Find String%n"));
+		patternString = "YouCantFindThis";
+		timeFastQuickSearch(search, patternString, writer);
+		
+		writer.write(String.format("%nTesting Can Find String%n"));		
+		patternString = file.substring(0, 1);
+		timeFastQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(30000, 30010);
+		timeFastQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(20050, 20100);
+		timeFastQuickSearch(search, patternString, writer);		
+
+		patternString = file.substring(10000, 10100);
+		timeFastQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(30100, 30300);
+		timeFastQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(20900, 21200);
+		timeFastQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(0, 400);
+		timeFastQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(200, 700);
+		timeFastQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(2500, 3100);
+		timeFastQuickSearch(search, patternString, writer);
+		
+		patternString = file.substring(0, file.length());
+		timeFastQuickSearch(search, patternString, writer);
+	}
+	
+	private static void testBrute(String file, Search search, PrintWriter writer)
+	{
+		String patternString = "";
+
+		writer.write(String.format("Testing Can't Find String%n"));
+		patternString = "YouCantFindThis";
+		timeIt(search, patternString, writer);
+		
+		writer.write(String.format("%nTesting Can Find String%n"));		
+		patternString = file.substring(0, 1);
+		timeIt(search, patternString, writer);
+		
+		patternString = file.substring(30000, 30010);
+		timeIt(search, patternString, writer);
+		
+		patternString = file.substring(20050, 20100);
+		timeIt(search, patternString, writer);		
+
+		patternString = file.substring(10000, 10100);
+		timeIt(search, patternString, writer);
+		
+		patternString = file.substring(30100, 30300);
+		timeIt(search, patternString, writer);
+		
+		patternString = file.substring(20900, 21200);
+		timeIt(search, patternString, writer);
+		
+		patternString = file.substring(0, 400);
+		timeIt(search, patternString, writer);
+		
+		patternString = file.substring(200, 700);
+		timeIt(search, patternString, writer);
+		
+		patternString = file.substring(2500, 3100);
+		timeIt(search, patternString, writer);
+
+		patternString = file.substring(0, file.length());
+		timeIt(search, patternString, writer);
+	}
+	
+	private static void timeQuickSearch(Search search, String patternString, PrintWriter writer)
 	{
 		long startTime, endTime, elapsedTime;
 		double smallestTime, seconds;
 		
-		Search search = new Search(file);
+		writer.write(String.format("%nLength of Pattern String: %d%n", patternString.length()));
 		
 		//START time recorder for QS
-		startTime = System.nanoTime();
-		search.testingQuickSearch(patternString);
-		endTime = System.nanoTime();				
-		//END time recorder
-		
-		//Print time taken in seconds
-		elapsedTime = endTime - startTime;
-		seconds = ((double)elapsedTime / 1000000000.0);
-		System.out.println("Time taken in seconds = " + seconds);
-		//TimeUnit.SECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS));
-		// End QS
-		
-		//START time recorder for FQS
+		writer.write(String.format("Quick Search:%n"));
+
 		startTime = System.nanoTime();
 		search.testingFastQuickSearch(patternString);
 		endTime = System.nanoTime();				
@@ -65,11 +183,42 @@ public class C4420Proj {
 		//Print time taken in seconds
 		elapsedTime = endTime - startTime;
 		seconds = ((double)elapsedTime / 1000000000.0);
-		System.out.println("Time taken in seconds = " + seconds);
-		//TimeUnit.SECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS));
-		// End FQS
-			
+		writer.write(String.format("Time taken in seconds = %f%n", seconds));
+		// End QS
+	}
+	
+	private static void timeFastQuickSearch(Search search, String patternString, PrintWriter writer)
+	{
+		long startTime, endTime, elapsedTime;
+		double smallestTime, seconds;
+		
+		writer.write(String.format("%nLength of Pattern String: %d%n", patternString.length()));
+		
+		
+		//START time recorder for QS
+		writer.write(String.format("Fast Quick Search:%n"));
+		startTime = System.nanoTime();
+		search.testingFastQuickSearch(patternString);
+		endTime = System.nanoTime();				
+		//END time recorder
+		
+		//Print time taken in seconds
+		elapsedTime = endTime - startTime;
+		seconds = ((double)elapsedTime / 1000000000.0);
+		writer.write(String.format("Time taken in seconds = %f%n", seconds));
+		// End QS
+	}
+	
+	
+	private static void timeIt(Search search, String patternString, PrintWriter writer)
+	{
+		long startTime, endTime, elapsedTime;
+		double smallestTime, seconds;
+		
+		writer.write(String.format("%nLength of Pattern String: %d%n", patternString.length()));	
+		
 		//START time recorder
+		writer.write(String.format("Brute Force Search:%n"));
 		startTime = System.nanoTime();
 		search.testingBruteForceSearch(patternString);
 		endTime = System.nanoTime();				
@@ -78,10 +227,10 @@ public class C4420Proj {
 		//Print time taken in seconds
 		elapsedTime = endTime - startTime;
 		seconds = ((double)elapsedTime / 1000000000.0);
-		System.out.println("Time taken in seconds = " + seconds);
+		writer.write(String.format("Time taken in seconds = %f%n", seconds));
 		//TimeUnit.SECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS));	
 		// END BruteForce
-
+		
 	}
 	
 	// Reads the file for its contents and returns a the contents as a single string.
@@ -119,16 +268,20 @@ class Search
 {
 	private String T;
 	private int lenT;
+	private PrintWriter writer;
 	
-	public Search(String file)
+	private long startTime, endTime, elapsedTime;
+	private double smallestTime, seconds;
+	
+	public Search(String file, PrintWriter writer)
 	{
 		T = file;
 		lenT = file.length();
+		this.writer = writer;
 	}
 	
 	public void testingQuickSearch(String P)
 	{
-		System.out.println("\nStarting QuickSearch");
 		
 		int lenP = P.length();
 		int init = lenP + 1;
@@ -137,17 +290,15 @@ class Search
 		
 		qsbc = preQuickSearch(P, lenP);
 		
-		//System.out.println(qsbc.toString());
 		// --> QuickSearch is O(lenP*lenT)	
 		QuickSearch(P, lenP, qsbc);
 	}
 	
 	public void testingBruteForceSearch(String P)
 	{
-		System.out.println("\nStarting BruteForceSearch");
 		int lenP = P.length();
 		
-		for(int i = 0; i < lenT-lenP; i++)
+		for(int i = 0; i <= lenT-lenP; i++)
 		{
 			boolean found = true;
 			
@@ -156,9 +307,10 @@ class Search
 				if(P.charAt(j) != T.charAt(i+j))
 				{
 					found = false;
+					break;
 				}
 			}
-			
+
 			if(found)
 			{
 				System.out.format("Match starting at index: %d%n", i);
@@ -168,7 +320,6 @@ class Search
 	
 	public String testingFastQuickSearch(String P)
 	{
-		System.out.println("\nStarting FastQuickSearch");
 		int pos = getPos(P, P.length());
 		HashMap next = new HashMap();
 		HashMap shift = new HashMap();
@@ -185,7 +336,7 @@ class Search
 		
 		// calculates the shift table for P
 		// again uses the same preprocessing as old quick search.
-		shift = preQuickSearch(P, P.length());
+		shift = preQuickSearch(P, P.length());		
 		
 		while(j <= T.length() - P.length())
 		{
@@ -201,7 +352,6 @@ class Search
 			{
 				System.out.println("Match starting at index: " + j);
 			}
-			
 			if(T.length() > j+P.length())
 			{
 				j = j + ((Integer)shift.get(""+T.charAt(j+P.length()))).intValue();
@@ -211,6 +361,7 @@ class Search
 				j = T.length();
 			}
 		}
+		
 		return "";
 	}
 	
@@ -263,7 +414,6 @@ class Search
 			{
 				System.out.println("Match starting at index: " + j);
 			}
-			
 			if(charPos < lenT)
 			{
 				j += ((Integer) qsbc.get(""+T.charAt(charPos))).intValue();
@@ -276,7 +426,7 @@ class Search
 			{
 				j = lenT;
 			}
-		}	
+		}
 	}
 	
 	/*

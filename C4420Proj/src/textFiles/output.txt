@@ -1,0 +1,47 @@
+Testing Can't Find String
+
+Length of Pattern String: 15
+Fast Quick Search:
+Time taken in seconds = 1.990840
+
+Testing Can Find String
+
+Length of Pattern String: 1
+Fast Quick Search:
+Time taken in seconds = 3.553938
+
+Length of Pattern String: 10
+Fast Quick Search:
+Time taken in seconds = 1.433190
+
+Length of Pattern String: 50
+Fast Quick Search:
+Time taken in seconds = 1.378108
+
+Length of Pattern String: 100
+Fast Quick Search:
+Time taken in seconds = 1.404957
+
+Length of Pattern String: 200
+Fast Quick Search:
+Time taken in seconds = 1.362329
+
+Length of Pattern String: 300
+Fast Quick Search:
+Time taken in seconds = 1.278017
+
+Length of Pattern String: 400
+Fast Quick Search:
+Time taken in seconds = 1.304655
+
+Length of Pattern String: 500
+Fast Quick Search:
+Time taken in seconds = 1.330711
+
+Length of Pattern String: 600
+Fast Quick Search:
+Time taken in seconds = 1.289335
+
+Length of Pattern String: 4459141
+Fast Quick Search:
+Time taken in seconds = 2.998581
