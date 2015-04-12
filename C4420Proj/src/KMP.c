@@ -113,12 +113,11 @@ int *preKmp(char *pattern, int psize) {
    return kmpNext;
 }
 
-int KMP(char *target, int tsize, char *pattern, int psize)
+int KMP(char *target, int tsize, char *pattern, int psize, int *kmpNext)
 {
 	//i = pos; j = i, n = tsize, y = target, x = pattern, m = psize
 	int pos = -1;
-	int *kmpNext = preKmp(pattern, psize);
-	
+	//int *kmpNext = preKmp(pattern, lenPS);
 	int i;
 	
 	if(!kmpNext)
@@ -190,14 +189,16 @@ void runKmpOnTargetSubstring(char *TargetText, int lenTS, int subStart, int subE
 	
 	char *PatternString;//pattern to find
 	clock_t start, end;
+	int *kmpNext;//used to store the kmp preprocessing values
 	float seconds;
 	
 	//Test new pattern string
 	int lenPS = subEnd - subStart;
 	
 	PatternString = getSubstring(TargetText, subStart, subEnd);	
+	kmpNext = preKmp(PatternString, lenPS);
 	start = clock();
-	KMP(TargetText, lenTS, PatternString, lenPS);
+	KMP(TargetText, lenTS, PatternString, lenPS, kmpNext);
 	end = clock();
 	seconds = (float)(end - start) / CLOCKS_PER_SEC;	
 	printf("Time taken to run Pattern string = %f seconds\n",
